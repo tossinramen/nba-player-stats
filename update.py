@@ -9,6 +9,7 @@ rebuilds data/board.js for index.html.
 """
 import argparse
 import json
+import sys
 import time
 import webbrowser
 from datetime import datetime
@@ -54,6 +55,7 @@ def load_bbref():
 
 
 def main():
+    sys.stdout.reconfigure(errors="replace")  # Windows consoles choke on accented names
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--source", choices=["auto", "nba", "bbref"], default="auto")
     ap.add_argument("--no-props", action="store_true")

@@ -132,7 +132,8 @@ def compact_logs(logs, player_ids):
     df = logs[logs.player_id.isin(player_ids)].sort_values("game_date", ascending=False)
     out = defaultdict(list)
     for r in df.itertuples(index=False):
-        row = [r.game_date, r.opp, int(r.home), seasons.get(r.season, -1), types.get(r.season_type, 0), r.wl]
+        wl = r.wl if isinstance(r.wl, str) else ""  # blank W/L reads back from CSV as NaN
+        row = [r.game_date, r.opp, int(r.home), seasons.get(r.season, -1), types.get(r.season_type, 0), wl]
         row += [_num(getattr(r, f)) for f in config.STAT_FIELDS]
         out[r.player_id].append(row)
     return dict(out)

@@ -1,0 +1,6 @@
+nba_api>=1.11
+pandas>=2.2,<3
+requests
+beautifulsoup4
+lxml
+pydoll-python>=2.0

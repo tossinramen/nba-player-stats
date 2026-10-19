@@ -64,8 +64,9 @@ def category_values(df):
     }
 
 
-# Name fixes for sportsbook -> NBA matching: normalized book name -> normalized NBA name.
-# Add entries here if update.py reports unmatched players.
+# Name fixes for matching sportsbook names to NBA names (lowercase, no punctuation or
+# Jr./III). Applied to both sides, so either spelling can be the key. Add entries here
+# if update.py reports unmatched players.
 NAME_ALIASES = {
     "nic claxton": "nicolas claxton",
     "herb jones": "herbert jones",
@@ -73,7 +74,6 @@ NAME_ALIASES = {
     "cam johnson": "cameron johnson",
     "bub carrington": "carlton carrington",
     "moe wagner": "moritz wagner",
-    "kj simpson": "kj simpson",
     "alex sarr": "alexandre sarr",
 }
 
