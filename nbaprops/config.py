@@ -24,11 +24,11 @@ LOOKAHEAD_DAYS = 3
 DEF_MIN_CURRENT_GAMES = 10
 
 # Raw box-score fields kept for every player-game (order matters: the front end
-# reads logs positionally using this list, which is shipped in board.js).
+# reads logs positionally using this list, which is shipped in board.json).
 STAT_FIELDS = ["min", "pts", "reb", "ast", "stl", "blk", "tov",
                "fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "oreb", "dreb"]
 
-# Prop categories. Keys must match CATS in index.html.
+# Prop categories. Keys must match catValue in src/lib/board.js.
 CATEGORIES = {
     "pts":    "Points",
     "reb":    "Rebounds",

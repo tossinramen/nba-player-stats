@@ -1,24 +1,22 @@
 """Daily refresh: pulls rosters, every game log, schedule and prop lines, then
-rebuilds data/board.js for index.html.
+rebuilds public/board.json for the site (npm run dev reloads it automatically).
 
     python update.py                  # nba_api, falls back to Basketball-Reference if it fails
     python update.py --source bbref   # force the Basketball-Reference (pydoll) scraper
     python update.py --no-props       # skip sportsbook lines
     python update.py --refresh        # also re-download cached past seasons
-    python update.py --open           # open the board in your browser when done
 """
 import argparse
 import json
 import sys
 import time
-import webbrowser
 from datetime import datetime
 
 import pandas as pd
 
 from nbaprops import books, build, config, nba_source
 
-BOARD_JS = config.DATA_DIR / "board.js"
+BOARD_JSON = config.ROOT / "public" / "board.json"
 POS_CACHE = config.CACHE_DIR / "positions.json"
 
 
@@ -60,7 +58,6 @@ def main():
     ap.add_argument("--source", choices=["auto", "nba", "bbref"], default="auto")
     ap.add_argument("--no-props", action="store_true")
     ap.add_argument("--refresh", action="store_true")
-    ap.add_argument("--open", action="store_true")
     args = ap.parse_args()
     t0 = time.time()
 
@@ -92,23 +89,21 @@ def main():
         offers = books.fetch_all()
 
     pos_cache = json.loads(POS_CACHE.read_text()) if POS_CACHE.exists() else {}
-    board = build.write_board(BOARD_JS, players=players, logs=logs, positions=positions,
+    board = build.write_board(BOARD_JSON, players=players, logs=logs, positions=positions,
                               schedule=schedule, offers=offers, source=source, ud_pos_cache=pos_cache)
     POS_CACHE.parent.mkdir(parents=True, exist_ok=True)
     POS_CACHE.write_text(json.dumps(pos_cache))
     logs.sort_values(["game_date", "player_name"]).to_csv(config.DATA_DIR / "gamelogs.csv", index=False)
 
     print(f"\nBoard: {len(board['players'])} players, {len(board['props'])} prop lines, "
-          f"{len(board['games'])} games -> {BOARD_JS.relative_to(config.ROOT)}")
+          f"{len(board['games'])} games -> {BOARD_JSON.relative_to(config.ROOT)}")
     print(f"All game logs -> data/gamelogs.csv")
     if board["meta"]["unmatched"]:
         print(f"{len(board['meta']['unmatched'])} book names didn't match a roster player "
               f"(add fixes to NAME_ALIASES in nbaprops/config.py):")
         for n in board["meta"]["unmatched"][:15]:
             print("   ", n)
-    print(f"Done in {time.time() - t0:.0f}s. Open index.html to view.")
-    if args.open:
-        webbrowser.open((config.ROOT / "index.html").as_uri())
+    print(f"Done in {time.time() - t0:.0f}s. View it with: npm run dev")
 
 
 if __name__ == "__main__":

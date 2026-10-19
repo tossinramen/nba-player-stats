@@ -1,4 +1,4 @@
-"""Turn players + game logs + schedule + book offers into data/board.js for index.html."""
+"""Turn players + game logs + schedule + book offers into public/board.json for the React site."""
 import json
 import re
 import unicodedata
@@ -176,6 +176,8 @@ def write_board(path, *, players, logs, positions, schedule, offers, source, ud_
         "league": league,
     }
     path.parent.mkdir(parents=True, exist_ok=True)
-    payload = json.dumps(board, separators=(",", ":"))
-    path.write_text(f"window.BOARD = {payload};\n", encoding="utf-8")
+    # Write then rename so the dev server never serves a half-written file.
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(board, separators=(",", ":")), encoding="utf-8")
+    tmp.replace(path)
     return board

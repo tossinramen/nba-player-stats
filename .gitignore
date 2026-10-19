@@ -1,3 +1,7 @@
 data/
+public/board.json
+public/board.tmp
+node_modules/
+dist/
 __pycache__/
 *.pyc

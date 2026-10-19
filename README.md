@@ -4,25 +4,30 @@ A local prop research board: every player on every 2026-27 NBA roster, every gam
 played in 2025-26 (regular season, play-in, playoffs) plus 2026-27 as it happens, and
 today's player prop lines and odds from FanDuel and Underdog.
 
-## Setup
+The site is React (Vite); the data is pulled by Python.
+
+## Setup (once)
 
 ```
 pip install -r requirements.txt
+npm install
 ```
 
 ## Daily use
 
 ```
-python update.py          # ~1 minute
+npm run update      # pull stats + lines (~1 minute); same as: python update.py
+npm run dev         # start the site at http://localhost:5173 (opens your browser)
 ```
 
-Then open `index.html` (double-click it; no server needed). Run it again any time
-during the season to pull last night's games: L5/L10/L20, streaks and the 2026-27 column
-move forward automatically.
+Leave `npm run dev` running if you like: every time you run `npm run update` in another
+terminal, the open page reloads with the new data. Each update pulls last night's games,
+so L5/L10/L20, streaks and the 2026-27 column move forward automatically.
+
+`python update.py` options:
 
 | Option | What it does |
 |---|---|
-| `--open` | open the board in your browser when the update finishes |
 | `--no-props` | skip the sportsbooks (stats only) |
 | `--source bbref` | use the Basketball-Reference backup instead of nba_api |
 | `--refresh` | re-download cached past seasons (normally pulled once) |
@@ -76,11 +81,17 @@ Every raw player-game is also written to `data/gamelogs.csv`.
 ## Files
 
 ```
-update.py               run this daily
-index.html              the board
-nbaprops/nba_source.py  nba_api fetchers
-nbaprops/bbref_source.py Basketball-Reference backup (pydoll)
-nbaprops/books.py       Underdog + FanDuel lines
-nbaprops/build.py       matches lines to players, defense ranks, writes data/board.js
-data/                   generated (git-ignored)
+update.py                  run this daily (npm run update)
+nbaprops/nba_source.py     nba_api fetchers
+nbaprops/bbref_source.py   Basketball-Reference backup (pydoll)
+nbaprops/books.py          Underdog + FanDuel lines
+nbaprops/build.py          matches lines to players, defense ranks, writes public/board.json
+src/App.jsx                page state: filters, sorting, paging, export
+src/lib/board.js           hit rates, streaks, projection, score
+src/components/            filter bar, table, columns, expanded row, markets popover
+public/board.json          generated data the site loads (git-ignored)
+data/                      caches + gamelogs.csv (git-ignored)
 ```
+
+`npm run build` makes a static copy of the site in `dist/` (it includes the current
+`board.json` snapshot); `npm run preview` serves that build.
